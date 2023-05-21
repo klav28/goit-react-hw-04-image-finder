@@ -10,7 +10,7 @@ const pixabayAPI = new PixabayAPI();
 export const App = () => {
   const [queryString, setQueryString] = useState('');
   const [imagesData, setImagesData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [isModalShow, setIsModalShow] = useState(false);
   const [largeImage, setLargeImage] = useState('');
@@ -41,14 +41,14 @@ export const App = () => {
 
       async function fetchData() {
         try {
-          setIsLoading(true);
+          // setIsLoading(true);
           const { data } = await pixabayAPI.fetchPhotos();
           setImagesData(i => [...i, ...data.hits]);
           setTotalPages(() => Math.trunc(data.totalHits / 12 + 1));
         } catch {
           console.log(Error);
         } finally {
-          setIsLoading(false);
+          // setIsLoading(false);
         }
       }
 
@@ -68,9 +68,7 @@ export const App = () => {
           }}
         ></ModalWindow>
       )}
-      {page < totalPages && (
-        <Button buttonText="LOAD MORE" onLoadMore={onLoadMore} />
-      )}
+      {page < totalPages && <Button onLoadMore={onLoadMore}>LOAD MORE</Button>}
     </>
   );
 };
