@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Notify } from 'notiflix';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { ModalWindow } from './Modal/Modal';
@@ -32,8 +33,6 @@ export const App = () => {
     setIsModalShow(true);
   };
 
-  const onLoadMore = () => setPage(page + 1);
-
   useEffect(() => {
     if (queryString.trim() !== '') {
       pixabayAPI.query = queryString;
@@ -43,8 +42,13 @@ export const App = () => {
         try {
           // setIsLoading(true);
           const { data } = await pixabayAPI.fetchPhotos();
-          setImagesData(i => [...i, ...data.hits]);
-          setTotalPages(() => Math.trunc(data.totalHits / 12 + 1));
+          if (data.totalHits === 0) {
+            Notify.warning('No images found for your request');
+          } else {
+            if (page === 1) Notify.success(`Found ${data.totalHits} images`);
+            setImagesData(i => [...i, ...data.hits]);
+            setTotalPages(() => Math.trunc(data.totalHits / 12 + 1));
+          }
         } catch {
           console.log(Error);
         } finally {
@@ -68,7 +72,9 @@ export const App = () => {
           }}
         ></ModalWindow>
       )}
-      {page < totalPages && <Button onLoadMore={onLoadMore}>LOAD MORE</Button>}
+      {page < totalPages && (
+        <Button onLoadMore={() => setPage(page + 1)}>LOAD MORE</Button>
+      )}
     </>
   );
 };
